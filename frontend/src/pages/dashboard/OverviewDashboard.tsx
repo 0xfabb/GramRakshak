@@ -1,38 +1,48 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { DropletIcon, BookOpen, Thermometer, Building } from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-const data = [
-  { month: "Jan", water: 75, education: 85, climate: 65, jobs: 45 },
-  { month: "Feb", water: 80, education: 82, climate: 68, jobs: 50 },
-  { month: "Mar", water: 85, education: 88, climate: 72, jobs: 55 },
-  { month: "Apr", water: 82, education: 90, climate: 70, jobs: 58 },
-];
+import { WaterSection } from "../../components/dashboard/WaterSection"; // Import your sections
+import { HealthSection } from "../../components/dashboard/HealthSection";
+import { LearnSection } from "../../components/dashboard/LearnSection";
+import { JobsSection } from "../../components/dashboard/JobsSection";
 
 const stats = [
-  { title: "Water Quality", value: "85%", icon: DropletIcon, color: "text-blue-500" },
-  { title: "Education Progress", value: "78%", icon: BookOpen, color: "text-green-500" },
-  { title: "Climate Action", value: "62%", icon: Thermometer, color: "text-orange-500" },
-  { title: "Employment", value: "45%", icon: Building, color: "text-purple-500" },
+  {
+    title: "Water Quality",
+    value: "Good",
+    icon: DropletIcon,
+    color: "text-blue-500",
+    change: { value: "+5%", isPositive: true },
+  },
+  {
+    title: "Health Checkups",
+    value: "23",
+    icon: Thermometer,
+    color: "text-green-500",
+    change: { value: "+2", isPositive: true },
+  },
+  {
+    title: "Courses Completed",
+    value: "12",
+    icon: BookOpen,
+    color: "text-orange-500",
+    change: { value: "+3", isPositive: true },
+  },
+  {
+    title: "Job Applications",
+    value: "5",
+    icon: Building,
+    color: "text-purple-500",
+    change: { value: "-1", isPositive: false },
+  },
 ];
 
 const OverviewDashboard = () => {
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Overview Dashboard</h1>
-      </div>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Dashboard Overview</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -41,60 +51,23 @@ const OverviewDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground">
+                {stat.change.value} from last month
+              </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Combined Metrics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Area 
-                  type="monotone" 
-                  dataKey="water" 
-                  stackId="1"
-                  stroke="#3b82f6" 
-                  fill="#3b82f6" 
-                  fillOpacity={0.2} 
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="education" 
-                  stackId="2"
-                  stroke="#22c55e" 
-                  fill="#22c55e" 
-                  fillOpacity={0.2} 
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="climate" 
-                  stackId="3"
-                  stroke="#f97316" 
-                  fill="#f97316" 
-                  fillOpacity={0.2} 
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="jobs" 
-                  stackId="4"
-                  stroke="#8b5cf6" 
-                  fill="#8b5cf6" 
-                  fillOpacity={0.2} 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <WaterSection />
+        <HealthSection />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <LearnSection />
+        <JobsSection />
+      </div>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import {
   DropletIcon,
   TrendingUpIcon,
@@ -11,11 +10,11 @@ import {
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
+import { Button } from "./ui/button";
 
-const menuItems = [
+const sidebarItems = [
   {
-    title: "Overview",
+    title: "Dashboard",
     path: "/dashboard",
     icon: LayoutDashboardIcon,
   },
@@ -65,29 +64,26 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Dashboards</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton
-                    asChild
-                    className={location.pathname === item.path ? "bg-accent" : ""}
-                  >
-                    <Link to={item.path}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <aside className="w-64 bg-background border-r border-gray-200 shadow-sm">
+      <nav className="mt-5 px-2">
+        {sidebarItems.map((item) => (
+          <Button
+            key={item.title}
+            className={`w-full justify-start mb-2 px-4 py-2 text-foreground hover:bg-primary-100 hover:text-primary-600 transition-colors duration-200 ${
+              location.pathname === item.path
+                ? "bg-primary-100 text-primary-600"
+                : "bg-transparent"
+            }`}
+            variant="ghost"
+            asChild
+          >
+            <Link to={item.path}>
+              <item.icon className="mr-2 h-5 w-5" />
+              {item.title}
+            </Link>
+          </Button>
+        ))}
+      </nav>
+    </aside>
   );
 }
