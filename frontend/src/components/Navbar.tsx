@@ -5,10 +5,12 @@ import { Link } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
 
+
 interface NavLinkProps {
   to: string;
   children: React.ReactNode;
 }
+
 
 const NavLink = ({ to, children }: NavLinkProps) => (
   <Link
