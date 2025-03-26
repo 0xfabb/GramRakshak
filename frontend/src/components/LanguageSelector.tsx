@@ -1,4 +1,4 @@
-
+import { useLanguage } from "../context/LanguageContext";
 import {
   Select,
   SelectContent,
@@ -6,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { createContext, useContext } from "react";
 
 const languages = [
   { code: "hi", name: "हिंदी" },
@@ -26,27 +25,11 @@ const languages = [
   { code: "en", name: "English" },
 ];
 
-// Create a context for language
-export const LanguageContext = createContext<{
-  language: string;
-  setLanguage: (lang: string) => void;
-}>({
-  language: "en",
-  setLanguage: () => {},
-});
-
-export const useLanguage = () => useContext(LanguageContext);
-
 export function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
 
-  const handleValueChange = (value: string) => {
-    setLanguage(value);
-    localStorage.setItem("selected-language", value);
-  };
-
   return (
-    <Select value={language} onValueChange={handleValueChange}>
+    <Select value={language} onValueChange={setLanguage}>
       <SelectTrigger className="w-[150px]">
         <SelectValue placeholder="Select Language" />
       </SelectTrigger>
