@@ -21,6 +21,7 @@ import { Toaster } from './components/ui/toaster';
 import { TooltipProvider } from './components/ui/tooltip';
 import { DashboardLayout } from './components/DashboardLayout';
 import { Toaster as Sonner } from "./components/ui/sonner";
+import CoursePage from './pages/CoursePage';
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App: React.FC = () => {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
                   <Route path="/dashboard/course" element={<CourseAI />} />
+                  <Route path="/course/:id" element={<CoursePage />} />
                   <Route path="/dashboard" element={<DashboardLayout><OverviewDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/water" element={<DashboardLayout><WaterDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/market" element={<DashboardLayout><MarketDashboard /></DashboardLayout>} />

@@ -133,7 +133,7 @@ const CourseAI: React.FC = () => {
 
     
       const response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAgRdhRht2XFaH-rHJ5qTCM_C061X34v6w`,
         { 
           contents: [
             { 
