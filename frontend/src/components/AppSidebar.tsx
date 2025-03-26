@@ -60,7 +60,7 @@ const sidebarItems = [
     icon: BellIcon,
   },
   {
-    title: "Courses",
+    title: "Learning",
     path: "/dashboard/course",
     icon: School,
   },

@@ -13,6 +13,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import LanguageIcon from "@mui/icons-material/Language";
 import { DashboardLayout } from "../../components/DashboardLayout";
 import FormattedAIResponse from "../../components/FormattedAIResponse";
 
@@ -95,6 +96,19 @@ const suggestedTopics = [
   "Sustainable Agriculture",
 ];
 
+const supportedLanguages = [
+  { code: "english", label: "English" },
+  { code: "hindi", label: "Hindi" },
+  { code: "tamil", label: "Tamil" },
+  { code: "telugu", label: "Telugu" },
+  { code: "bengali", label: "Bengali" },
+  { code: "gujrati", label: "Gujarati" },
+  { code: "kannada", label: "Kannada" },
+  { code: "malyalam", label: "Malayalam" },
+  { code: "marathi", label: "Marathi" },
+  { code: "punjabi", label: "Punjabi" },
+];
+
 const CourseAI: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<Message[]>([
@@ -107,6 +121,7 @@ const CourseAI: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [category, setCategory] = useState<string>("Organic_Farming");
   const [savedResources, setSavedResources] = useState<number[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -116,15 +131,14 @@ const CourseAI: React.FC = () => {
     try {
       setLoading(true);
 
-      // Replace with your Gemini API endpoint and API key
-
+    
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
-        {
+        { 
           contents: [
-            {
-              parts: [{ text: userMessage }],
-            },
+            { 
+              parts: [{ text: `You are a farming specialist AI who has complete knowledge and understanding of crops and farming and related stuff and you respond in ${selectedLanguage}, regardless of the language of the user prompt. ${userMessage}` }] 
+            } // User input
           ],
         },
         {
@@ -133,6 +147,7 @@ const CourseAI: React.FC = () => {
           },
         }
       );
+      
 
       const aiResponse =
         response.data.candidates?.[0]?.content?.parts?.[0]?.text ||
@@ -177,11 +192,25 @@ const CourseAI: React.FC = () => {
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* AI Assistant Section */}
             <div className="bg-background rounded-3xl shadow-2xl overflow-hidden border border-primary transform transition-all hover:shadow-3xl">
-              <div className="bg-gradient-to-r from-primary to-primary-500 py-5 px-6">
+              <div className="bg-gradient-to-r from-primary to-primary-500 py-5 px-6 flex justify-between items-center">
                 <h2 className="text-white text-xl font-semibold flex items-center">
                   <PsychologyIcon className="mr-3" />
                   AI Learning Assistant
                 </h2>
+                <div className="flex items-center space-x-2">
+                  <LanguageIcon className="text-white" />
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    className="bg-background text-white border border-white rounded-md px-2 py-1 focus:outline-none"
+                  >
+                    {supportedLanguages.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Chat Messages */}
