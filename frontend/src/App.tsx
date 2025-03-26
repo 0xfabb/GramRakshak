@@ -15,6 +15,7 @@ import JobsDashboard from "./pages/dashboard/JobsDashboard";
 import ClimateDashboard from "./pages/dashboard/ClimateDashboard";
 import GenderDashboard from "./pages/dashboard/GenderDashboard";
 import UpdatesDashboard from "./pages/dashboard/UpdatesDashboard";
+import CourseAI from "./pages/dashboard/CourseAI"
 import { ThemeProvider } from './components/ThemeProvider';
 import { Toaster } from './components/ui/toaster';
 import { TooltipProvider } from './components/ui/tooltip';
@@ -37,6 +38,7 @@ const App: React.FC = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/dashboard/course" element={<CourseAI />} />
                   <Route path="/dashboard" element={<DashboardLayout><OverviewDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/water" element={<DashboardLayout><WaterDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/market" element={<DashboardLayout><MarketDashboard /></DashboardLayout>} />

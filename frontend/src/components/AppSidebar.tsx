@@ -7,6 +7,7 @@ import {
   LeafIcon,
   LayoutDashboardIcon,
   BellIcon,
+  School,
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
@@ -57,6 +58,11 @@ const sidebarItems = [
     title: "Updates",
     path: "/dashboard/updates",
     icon: BellIcon,
+  },
+  {
+    title: "Learning",
+    path: "/dashboard/course",
+    icon: School,
   },
 ];
 
