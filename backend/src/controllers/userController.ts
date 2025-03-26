@@ -29,11 +29,11 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 // ✅ Update User (Only Self or Admin)
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  const { name, phone, address } = req.body;
+  const { name, phone, state,district,pincode, village } = req.body;
 
   const updatedUser = await prisma.user.update({
     where: { id },
-    data: { name, phone, address },
+    data: { name, phone, state,district,pincode, village },
   });
 
   res.status(200).json(new ApiResponse(200, "User updated successfully", updatedUser));

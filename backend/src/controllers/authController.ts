@@ -4,28 +4,36 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../utils/prisma";
 import { ApiResponse } from "../utils/ApiResponse";
 import { ApiError } from "../utils/ApiError";
+import { Role } from "@prisma/client";
+
+declare module "express" {
+  export interface Request {
+    user?: { id: string; role: Role };
+  }
+}
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 // ✅ User Registration
 export const register = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { name, email, phone, address, password, role } = req.body;
-
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) return next(new ApiError(400, "User already exists"));
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await prisma.user.create({
-      data: { name, email, phone, address, password: hashedPassword, role },
-    });
-
-    res.status(201).json(new ApiResponse(201, "User registered successfully", user));
-  } catch (error) {
-    next(error);
-  }
-};
+    try {
+      const { name, email, phone, state, district, village, pincode, password, role } = req.body;
+  
+      const existingUser = await prisma.user.findUnique({ where: { email } });
+      if (existingUser) return next(new ApiError(400, "User already exists"));
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      const user = await prisma.user.create({
+        data: { name, email, phone, state, district, village, pincode, password: hashedPassword, role },
+      });
+  
+      res.status(201).json(new ApiResponse(201, "User registered successfully", user));
+    } catch (error) {
+      next(error);
+    }
+  };
+  
 
 // ✅ User Login
 export const login = async (req: Request, res: Response, next: NextFunction) => {
