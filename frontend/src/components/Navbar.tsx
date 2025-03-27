@@ -41,7 +41,7 @@ export function Navbar() {
             <NavLink to="/">Home</NavLink>
             <NavLink to="/features">Features</NavLink>
             <NavLink to="/about">About</NavLink>
-            <LanguageSelector />
+            {/* <LanguageSelector /> */}
             <ThemeToggle />
             <Link
               to="/login"
