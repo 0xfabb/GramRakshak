@@ -8,6 +8,8 @@ import {
   LayoutDashboardIcon,
   BellIcon,
   School,
+  LandPlot,
+  LandPlotIcon,
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
@@ -23,6 +25,11 @@ const sidebarItems = [
     title: "Water Quality",
     path: "/dashboard/water",
     icon: DropletIcon,
+  },
+  {
+    title: "Soil",
+    path: "/dashboard/soil",
+    icon: LandPlotIcon,
   },
   {
     title: "Market Links",
@@ -44,11 +51,11 @@ const sidebarItems = [
     path: "/dashboard/jobs",
     icon: BriefcaseIcon,
   },
-  {
-    title: "Climate",
-    path: "/dashboard/climate",
-    icon: LeafIcon,
-  },
+  // {
+  //   title: "Climate",
+  //   path: "/dashboard/climate",
+  //   icon: LeafIcon,
+  // },
   {
     title: "Gender Equality",
     path: "/dashboard/gender",

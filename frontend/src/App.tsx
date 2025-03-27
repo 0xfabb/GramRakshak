@@ -22,6 +22,7 @@ import { TooltipProvider } from './components/ui/tooltip';
 import { DashboardLayout } from './components/DashboardLayout';
 import { Toaster as Sonner } from "./components/ui/sonner";
 import CoursePage from './pages/CoursePage';
+import SoilDashboard from './pages/dashboard/SoilDashboard';
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App: React.FC = () => {
                   <Route path="/dashboard/market" element={<DashboardLayout><MarketDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/education" element={<DashboardLayout><EducationDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/health" element={<DashboardLayout><HealthDashboard /></DashboardLayout>} />
+                  <Route path="/dashboard/soil" element={<DashboardLayout><SoilDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/jobs" element={<DashboardLayout><JobsDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/climate" element={<DashboardLayout><ClimateDashboard /></DashboardLayout>} />
                   <Route path="/dashboard/gender" element={<DashboardLayout><GenderDashboard /></DashboardLayout>} />
