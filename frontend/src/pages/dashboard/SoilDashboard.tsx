@@ -1,35 +1,38 @@
+import axios from 'axios';
 import SoilChart from "../../components/charts/SoilChart";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { AlertTriangle, Droplet, Sprout, Wheat } from "lucide-react";
-
-const data = [
-  { date: "2024-01", moisture: 40, ph: 6.8, fertility: 70 },
-  { date: "2024-02", moisture: 42, ph: 7.0, fertility: 72 },
-  { date: "2024-03", moisture: 38, ph: 6.5, fertility: 68 },
-  { date: "2024-04", moisture: 45, ph: 7.2, fertility: 75 },
-];
+import { useState } from 'react';
+import { useESPSensorData } from '../../hooks/useSensor';
 
 const config = {
   moisture: { label: "Moisture Level", color: "#22c55e" },
   ph: { label: "pH Level", color: "#f97316" },
-  fertility: { label: "Soil Fertility", color: "#8b5cf6" },
+  fertility: { label: "TDS", color: "#8b5cf6" },
 };
 
 const SoilDashboard = () => {
+  const { sensorData, isLoading, error: sensorError } = useESPSensorData();
+  const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const analyzeSoil = async () => {
     try {
-      const response = await fetch("/api/analyze-soil", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data }),
+      axios.defaults.baseURL = 'http://localhost:8000';
+
+      const response = await axios.post('/predict', {
+        ph: sensorData?.ph || 0,
+        moisture: sensorData?.moisture || 0,
+        turbidity: sensorData?.tds || 0,
+        location: "India"
       });
-      const result = await response.json();
-      alert(`Predicted Soil Quality: ${result.quality}`);
+
+      setAnalysisResult(response.data.soil_quality);
+      setError(null);
     } catch (error) {
       console.error("Error analyzing soil:", error);
-      alert("Failed to analyze soil quality. Please try again.");
+      setError("Failed to analyze soil quality. Please try again.");
+      setAnalysisResult(null);
     }
   };
 
@@ -52,7 +55,7 @@ const SoilDashboard = () => {
             <Droplet className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">40%</div>
+            <div className="text-2xl font-bold">{isLoading ? "Loading..." : `${sensorData?.moisture || "N/A"}%`}</div>
             <p className="text-xs text-muted-foreground">Optimal range: 30-60%</p>
           </CardContent>
         </Card>
@@ -62,45 +65,62 @@ const SoilDashboard = () => {
             <Sprout className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">6.8</div>
+            <div className="text-2xl font-bold">{isLoading ? "Loading..." : sensorData?.ph || "N/A"}</div>
             <p className="text-xs text-muted-foreground">Ideal range: 6.0-7.5</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Soil Fertility</CardTitle>
+            <CardTitle className="text-sm font-medium">TDS</CardTitle>
             <Wheat className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">70%</div>
-            <p className="text-xs text-muted-foreground">Higher values indicate better fertility</p>
+            <div className="text-2xl font-bold">{isLoading ? "Loading..." : `${sensorData?.tds || "N/A"}`}</div>
+            <p className="text-xs text-muted-foreground">ppm</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Soil Quality Trends Chart with extra bottom margin */}
-     
-
-      {/* Analysis Section Below the Chart */}
+      {/* Analysis Section */}
       <Card>
         <CardHeader>
           <CardTitle>Soil Analysis</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <button
             onClick={analyzeSoil}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            disabled={isLoading}
           >
-            Analyze Soil Quality
+            {isLoading ? "Fetching Data..." : "Analyze Soil Quality"}
           </button>
+          {analysisResult && (
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+              <p className="text-green-800">
+                <strong>Analysis Result:</strong> {analysisResult}
+              </p>
+            </div>
+          )}
+          {error && (
+            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+              <p className="text-red-800">{error}</p>
+            </div>
+          )}
+          {sensorError && (
+            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+              <p className="text-red-800">Sensor Data Error: {sensorError}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Soil Quality Trends Chart */}
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Soil Quality Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <SoilChart data={data} config={config} />
+          <SoilChart config={config} />
         </CardContent>
       </Card>
     </div>

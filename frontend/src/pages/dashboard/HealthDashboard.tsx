@@ -22,7 +22,7 @@ const HealthDashboard = () => {
     formData.append("file", selectedImage);
 
     try {
-      const response = await axios.post("http://localhost:8000/predict", formData, {
+      const response = await axios.post("http://localhost:8001/predict", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       

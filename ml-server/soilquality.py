@@ -1,25 +1,39 @@
-from fastapi import FastAPI
+import logging
+import uvicorn
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
-import google.generativeai as genai
 import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI()
 
-# ✅ Securely load API Key from environment variable (Set it before running)
-API_KEY = os.getenv("GOOGLE_API_KEY")
+# ✅ Load API Key Securely
+API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
-    raise ValueError("GOOGLE_API_KEY is missing! Set it in your environment.")
+    raise ValueError("GEMINI_API_KEY is missing! Set it in your environment.")
 
-# Initialize Gemini Pro API
+# Initialize Google Generative AI Client
 genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("gemini-1.5-pro")  # Updated to use stable model version
 
 # Enable CORS (Allow frontend requests)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change this to specific frontend URL in production
+    allow_origins=["*"],  # Update to specific frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,7 +49,7 @@ class SoilInput(BaseModel):
 @app.post("/predict")
 async def predict(soil_data: SoilInput):
     """
-    Takes pH, Moisture, Turbidity, and an optional location for a more contextual soil quality prediction.
+    Takes pH, Moisture, Turbidity, and an optional location for a soil quality prediction.
     Example:
     {
         "ph": 6.5,
@@ -44,20 +58,36 @@ async def predict(soil_data: SoilInput):
         "location": "Punjab, India"
     }
     """
-    # Format input for Gemini Pro
-    input_text = f"""
-    Predict soil quality for:
-    - pH: {soil_data.ph}
-    - Moisture: {soil_data.moisture}%
-    - Turbidity: {soil_data.turbidity}%
-    - Location: {soil_data.location if soil_data.location else 'Unknown'}
-    
-    Recommend the best crops suitable for this soil.
-    """
+    try:
+        # Format input for Gemini Pro
+        input_text = f"""
+        Predict soil quality for:
+        - pH: {soil_data.ph}
+        - Moisture: {soil_data.moisture}%
+        - Turbidity: {soil_data.turbidity}%
+        - Location: {soil_data.location if soil_data.location else 'India'}
+        
+        Recommend the best crops suitable for this soil.
+        """
 
-    # Generate response from Gemini Pro
-    response = model.generate_content(input_text)
-    
-    return {"soil_quality": response.text}
+        # Generate response from Gemini Pro
+        response = model.generate_content(input_text)
 
-# Run the server using: uvicorn filename:app --reload
+        return {"soil_quality": response.text}
+
+    except Exception as e:
+        logger.error(f"Prediction error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating response: {str(e)}")
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    logger.info("Health check endpoint accessed")
+    return {"status": "healthy"}
+
+# Main entry point
+if __name__ == "__main__":
+    host = "0.0.0.0"
+    port = 8000
+    logger.info(f"Starting server on http://{host}:{port}")
+    uvicorn.run("soilquality:app", host=host, port=port, reload=True)

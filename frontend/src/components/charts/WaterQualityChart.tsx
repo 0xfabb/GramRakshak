@@ -1,29 +1,86 @@
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
+import { ChartContainer } from "../../components/ui/chart";
+import { useESPSensorData } from "../../hooks/useSensor";
+import { useState, useEffect } from "react";
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-
-const data = [
-  { date: "2023-01", ph: 7.2, turbidity: 5, dissolvedOxygen: 8 },
-  { date: "2023-02", ph: 7.1, turbidity: 4, dissolvedOxygen: 8.2 },
-  { date: "2023-03", ph: 7.3, turbidity: 6, dissolvedOxygen: 7.8 },
-  { date: "2023-04", ph: 7.0, turbidity: 5, dissolvedOxygen: 8.1 },
-  { date: "2023-05", ph: 7.2, turbidity: 4, dissolvedOxygen: 8.3 },
-  { date: "2023-06", ph: 7.4, turbidity: 3, dissolvedOxygen: 8.5 },
-]
-
-export function WaterQualityChart() {
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="ph" stroke="#8884d8" />
-        <Line type="monotone" dataKey="turbidity" stroke="#82ca9d" />
-        <Line type="monotone" dataKey="dissolvedOxygen" stroke="#ffc658" />
-      </LineChart>
-    </ResponsiveContainer>
-  )
+interface ChartData {
+  date: string;
+  ph: number;
+  turbidity: number;
 }
 
+interface Config {
+  [key: string]: {
+    label: string;
+    color: string;
+  };
+}
+
+const WaterQualityChart: React.FC<{ config: Config }> = ({ config }) => {
+  const { sensorData, isLoading, error } = useESPSensorData();
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+
+  // Update the chart data with each new sensor reading
+  useEffect(() => {
+    if (sensorData) {
+      setChartData(prevData => [
+        ...prevData.slice(-19), // Keep only the last 20 readings
+        {
+          date: new Date().toLocaleTimeString(),
+          ph: sensorData.ph || 0,
+          turbidity: sensorData.tds || 0 // Assuming 'tds' represents turbidity
+        }
+      ]);
+    }
+  }, [sensorData]);
+
+  return (
+    <div className="h-[300px]">
+      <ChartContainer config={config}>
+        {isLoading ? (
+          <p>Loading water quality data...</p>
+        ) : error ? (
+          <p className="text-red-500">Error: {error}</p>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <XAxis 
+                dataKey="date" 
+                stroke="#888888" 
+                fontSize={12} 
+                tickLine={false} 
+                axisLine={false} 
+              />
+              <YAxis 
+                stroke="#888888" 
+                fontSize={12} 
+                tickLine={false} 
+                axisLine={false} 
+              />
+              <Tooltip />
+              {Object.keys(config).map((key) => (
+                <Area
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={config[key].color}
+                  fill={config[key].color}
+                  fillOpacity={0.2}
+                />
+              ))}
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </ChartContainer>
+    </div>
+  );
+};
+
+export default WaterQualityChart;
